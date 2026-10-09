@@ -37,3 +37,8 @@ backend/src/main/resources/application.properties
 .env
 .env.*
 !.env.example
+
+# Local database backups
+*.sql
+*.dump
+*.backup

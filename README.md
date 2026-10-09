@@ -327,3 +327,52 @@ https://github.com/p-Abhi2006
 ---
 
 ⭐ **Building skills. Building systems. Preparing for the future.**
+
+---
+
+## Local Development Setup
+
+### Prerequisites
+
+- Java 21
+- PostgreSQL
+- Git
+
+### 1. Create the database
+
+Create the PostgreSQL database if it does not already exist:
+
+```sql
+CREATE DATABASE prepiq_db;
+```
+
+### 2. Configure the backend
+
+Configure the PostgreSQL connection URL, username, and password in your local `backend/src/main/resources/application.properties`.
+
+Do not commit database credentials or secrets to GitHub.
+
+### 3. Start the backend
+
+From the `backend` directory, run:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+The backend runs at `http://localhost:8080` when startup succeeds.
+
+### 4. Verify the Questions API
+
+Open another terminal and run:
+
+```powershell
+Invoke-RestMethod http://localhost:8080/api/questions
+```
+
+The endpoint returns the questions available in the database.
+
+### Database Documentation
+
+- [Database Schema](docs/database-schema.md)
+- [Entity Relationship Diagram](docs/er-diagram.md)
