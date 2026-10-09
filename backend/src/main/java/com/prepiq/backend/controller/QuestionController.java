@@ -1,6 +1,7 @@
+
 package com.prepiq.backend.controller;
 
-import com.prepiq.backend.entity.Question;
+import com.prepiq.backend.dto.QuestionResponse;
 import com.prepiq.backend.service.QuestionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class QuestionController {
     }
 
     @GetMapping
-    public List<Question> getAllQuestions() {
+    public List<QuestionResponse> getAllQuestions() {
         return questionService.getAllQuestions();
     }
 }

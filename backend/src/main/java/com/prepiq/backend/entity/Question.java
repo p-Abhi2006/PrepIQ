@@ -1,9 +1,13 @@
+
 package com.prepiq.backend.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,11 +18,14 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String question;
 
     private String answer;
 
-    private String topic;
+    @ManyToOne
+    @JoinColumn(name = "topic_id")
+    private Topic topic;
 
     public Question() {
     }
@@ -47,11 +54,11 @@ public class Question {
         this.answer = answer;
     }
 
-    public String getTopic() {
+    public Topic getTopic() {
         return topic;
     }
 
-    public void setTopic(String topic) {
+    public void setTopic(Topic topic) {
         this.topic = topic;
     }
 }
