@@ -24,6 +24,13 @@ public class QuestionService {
                 .toList();
     }
 
+    public List<QuestionResponse> getQuestionsByTopicId(Long topicId) {
+        return questionRepository.findByTopicId(topicId)
+                .stream()
+                .map(this::toQuestionResponse)
+                .toList();
+    }
+
     private QuestionResponse toQuestionResponse(Question question) {
         return new QuestionResponse(
                 question.getId(),
