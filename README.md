@@ -376,3 +376,5 @@ The endpoint returns the questions available in the database.
 
 - [Database Schema](docs/database-schema.md)
 - [Entity Relationship Diagram](docs/er-diagram.md)
+
+- [SQL Schema (DDL)](docs/schema.sql)
