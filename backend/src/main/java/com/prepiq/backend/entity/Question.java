@@ -27,9 +27,23 @@ public class Question {
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
+    // No-argument constructor required by JPA
+    // 1. No-argument constructor required by JPA
     public Question() {
     }
 
+    // 2. Constructor with question and answer
+    public Question(String question, String answer) {
+        this.question = question;
+        this.answer = answer;
+    }
+
+    // 3. Constructor with question, answer, and topic
+    public Question(String question, String answer, Topic topic) {
+        this.question = question;
+        this.answer = answer;
+        this.topic = topic;
+    }
     public Long getId() {
         return id;
     }
