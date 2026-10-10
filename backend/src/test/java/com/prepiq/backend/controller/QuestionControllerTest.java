@@ -62,4 +62,26 @@ class QuestionControllerTest {
                 .andExpect(jsonPath("$[0].topicId").value(1))
                 .andExpect(jsonPath("$[0].topic").value("DSA"));
     }
+
+    @Test
+    void getQuestionsByTopicShouldReturnEmptyListWhenNoQuestionsExist()
+            throws Exception {
+
+        when(questionService.getQuestionsByTopicId(999L))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/api/questions/by-topic")
+                        .param("topicId", "999"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void getQuestionsByTopicShouldReturnBadRequestWhenTopicIdIsMissing()
+            throws Exception {
+
+        mockMvc.perform(get("/api/questions/by-topic"))
+                .andExpect(status().isBadRequest());
+    }
+
 }
