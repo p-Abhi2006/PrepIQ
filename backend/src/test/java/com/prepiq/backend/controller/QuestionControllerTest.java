@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
+import static org.mockito.Mockito.verifyNoInteractions;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -82,6 +82,27 @@ class QuestionControllerTest {
 
         mockMvc.perform(get("/api/questions/by-topic"))
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    void getQuestionsByTopicShouldReturnBadRequestWhenTopicIdIsZero()
+            throws Exception {
+
+        mockMvc.perform(get("/api/questions/by-topic")
+                        .param("topicId", "0"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(questionService);
+    }
+
+    @Test
+    void getQuestionsByTopicShouldReturnBadRequestWhenTopicIdIsNegative()
+            throws Exception {
+
+        mockMvc.perform(get("/api/questions/by-topic")
+                        .param("topicId", "-1"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(questionService);
     }
 
 }

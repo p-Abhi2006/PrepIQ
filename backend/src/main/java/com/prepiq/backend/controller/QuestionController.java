@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.validation.annotation.Validated;
 import java.util.List;
-
+@Validated
 @RestController
 @RequestMapping("/api/questions")
 public class QuestionController {
@@ -27,7 +27,9 @@ public class QuestionController {
 
     @GetMapping("/by-topic")
     public List<QuestionResponse> getQuestionsByTopic(
-            @RequestParam Long topicId) {
+            @RequestParam
+            @jakarta.validation.constraints.Positive
+            Long topicId) {
         return questionService.getQuestionsByTopicId(topicId);
     }
 }
