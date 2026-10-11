@@ -31,6 +31,16 @@ public class QuestionService {
                 .toList();
     }
 
+    public List<QuestionResponse> searchQuestions(String keyword) {
+        return questionRepository
+                .findByQuestionContainingIgnoreCaseOrAnswerContainingIgnoreCase(
+                        keyword, keyword
+                )
+                .stream()
+                .map(this::toQuestionResponse)
+                .toList();
+    }
+
     private QuestionResponse toQuestionResponse(Question question) {
         return new QuestionResponse(
                 question.getId(),

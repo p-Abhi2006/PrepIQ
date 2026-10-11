@@ -10,4 +10,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findByTopicId(Long topicId);
 
+    List<Question> findByQuestionContainingIgnoreCaseOrAnswerContainingIgnoreCase(
+            String questionKeyword,
+            String answerKeyword
+    );
 }

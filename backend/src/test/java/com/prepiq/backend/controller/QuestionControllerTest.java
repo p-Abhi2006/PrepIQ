@@ -105,4 +105,46 @@ class QuestionControllerTest {
         verifyNoInteractions(questionService);
     }
 
+    @Test
+    void searchQuestionsShouldReturnMatchingQuestions() throws Exception {
+
+        when(questionService.searchQuestions("array")).thenReturn(List.of(
+                new QuestionResponse(
+                        1L,
+                        "What is an array?",
+                        "A collection of elements.",
+                        1L,
+                        "DSA"
+                )
+        ));
+
+        mockMvc.perform(get("/api/questions/search")
+                        .param("keyword", "array"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].question").value("What is an array?"))
+                .andExpect(jsonPath("$[0].topic").value("DSA"));
+    }
+
+    @Test
+    void searchQuestionsShouldReturnBadRequestWhenKeywordIsMissing()
+            throws Exception {
+
+        mockMvc.perform(get("/api/questions/search"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(questionService);
+    }
+
+    @Test
+    void searchQuestionsShouldReturnBadRequestWhenKeywordIsBlank()
+            throws Exception {
+
+        mockMvc.perform(get("/api/questions/search")
+                        .param("keyword", "   "))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(questionService);
+    }
+
 }
