@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,4 +70,39 @@ class QuestionServiceTest {
 
         verify(questionRepository).findByTopicId(1L);
     }
+
+    @Test
+    void getQuestionsByTopicIdShouldReturnEmptyListWhenNoQuestionsExist() {
+        when(questionRepository.findByTopicId(999L))
+                .thenReturn(List.of());
+
+        List<QuestionResponse> responses =
+                questionService.getQuestionsByTopicId(999L);
+
+        assertEquals(0, responses.size());
+
+        verify(questionRepository).findByTopicId(999L);
+    }
+
+    @Test
+    void getAllQuestionsShouldHandleQuestionWithoutTopic() {
+        Question questionWithoutTopic = new Question(
+                "What is Java?",
+                "Java is a programming language."
+        );
+
+        when(questionRepository.findAll())
+                .thenReturn(List.of(questionWithoutTopic));
+
+        List<QuestionResponse> responses =
+                questionService.getAllQuestions();
+
+        assertEquals(1, responses.size());
+        assertEquals("What is Java?", responses.get(0).question());
+        assertEquals(null, responses.get(0).topicId());
+        assertEquals(null, responses.get(0).topic());
+
+        verify(questionRepository).findAll();
+    }
+
 }
