@@ -3,7 +3,6 @@ package com.prepiq.backend.controller;
 import com.prepiq.backend.dto.UserRegistrationRequest;
 import com.prepiq.backend.dto.UserResponse;
 import com.prepiq.backend.exception.UserAlreadyExistsException;
-import com.prepiq.backend.exception.UserNotFoundException;
 import com.prepiq.backend.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -173,58 +171,6 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserByIdShouldReturnOkAndUserResponseWhenFound() throws Exception {
-        when(userService.getUserById(1L))
-                .thenReturn(new UserResponse(
-                        1L,
-                        "Abhishek",
-                        "abhishek@example.com",
-                        LocalDateTime.of(2026, 10, 18, 12, 0)
-                ));
-
-        mockMvc.perform(get("/api/users/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Abhishek"))
-                .andExpect(jsonPath("$.email").value("abhishek@example.com"))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.password").doesNotExist())
-                .andExpect(jsonPath("$.passwordHash").doesNotExist());
-    }
-
-    @Test
-    void getUserByIdShouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
-        when(userService.getUserById(999L))
-                .thenThrow(new UserNotFoundException("User not found with id: 999"));
-
-        mockMvc.perform(get("/api/users/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.error").value("Not Found"))
-                .andExpect(jsonPath("$.message").value("User not found with id: 999"));
-    }
-
-    @Test
-    void getUserByIdShouldReturnBadRequestWhenIdIsZero() throws Exception {
-        mockMvc.perform(get("/api/users/0"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"));
-
-        verifyNoInteractions(userService);
-    }
-
-    @Test
-    void getUserByIdShouldReturnBadRequestWhenIdIsNegative() throws Exception {
-        mockMvc.perform(get("/api/users/-1"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"));
-
-        verifyNoInteractions(userService);
-    }
-
-    @Test
     void registerUserShouldReturnBadRequestWhenJsonIsMalformed() throws Exception {
         String malformedJson = "{\"name\": \"Abhishek\", \"email\": ";
 
@@ -240,25 +186,6 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserByIdShouldReturnBadRequestWhenIdIsNotNumeric() throws Exception {
-        mockMvc.perform(get("/api/users/abc"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message", containsString("Invalid parameter: id")));
-
-        verifyNoInteractions(userService);
-    }
-
-    @Test
-    void shouldReturnMethodNotAllowedWhenMethodNotSupported() throws Exception {
-        mockMvc.perform(delete("/api/users/1"))
-                .andExpect(status().isMethodNotAllowed())
-                .andExpect(jsonPath("$.status").value(405))
-                .andExpect(jsonPath("$.error").value("Method Not Allowed"));
-    }
-
-    @Test
     void registerUserShouldReturnUnsupportedMediaTypeWhenContentTypeIsNotJson() throws Exception {
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_XML)
@@ -271,17 +198,43 @@ class UserControllerTest {
     }
 
     @Test
+    void shouldReturnNotFoundWhenAttemptingToGetUserById() throws Exception {
+        mockMvc.perform(get("/api/users/1"))
+                .andExpect(status().isNotFound());
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
     void shouldReturnNotFoundWhenPathDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/users/not-found/path"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    void shouldReturnMethodNotAllowedWhenMethodNotSupported() throws Exception {
+        mockMvc.perform(get("/api/users/register"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.status").value(405))
+                .andExpect(jsonPath("$.error").value("Method Not Allowed"));
+    }
+
+    @Test
     void shouldReturnInternalServerErrorWithSanitizedMessageOnUnexpectedException() throws Exception {
-        when(userService.getUserById(5L))
+        when(userService.registerUser(any(UserRegistrationRequest.class)))
                 .thenThrow(new RuntimeException("Sensitive database credentials or internal SQL trace"));
 
-        mockMvc.perform(get("/api/users/5"))
+        String requestBody = """
+                {
+                    "name": "Abhishek",
+                    "email": "abhishek@example.com",
+                    "password": "StrongPassword123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("Internal Server Error"))
