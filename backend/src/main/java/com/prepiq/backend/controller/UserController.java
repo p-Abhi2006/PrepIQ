@@ -1,0 +1,39 @@
+package com.prepiq.backend.controller;
+
+import com.prepiq.backend.dto.UserRegistrationRequest;
+import com.prepiq.backend.dto.UserResponse;
+import com.prepiq.backend.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+@Validated
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponse registerUser(@Valid @RequestBody UserRegistrationRequest request) {
+        return userService.registerUser(request);
+    }
+
+    @GetMapping("/{id}")
+    public UserResponse getUserById(@PathVariable @Positive Long id) {
+        return userService.getUserById(id);
+    }
+}
