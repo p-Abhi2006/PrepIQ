@@ -346,13 +346,46 @@ Create the PostgreSQL database if it does not already exist:
 CREATE DATABASE prepiq_db;
 ```
 
-### 2. Configure the backend
+### 2. Configure backend credentials
 
-Configure the PostgreSQL connection URL, username, and password in your local `backend/src/main/resources/application.properties`.
+The backend reads database credentials from environment variables (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD`).
 
-Do not commit database credentials or secrets to GitHub.
+1. Copy the template to create your local `application.properties` (if not already present):
 
-### 3. Start the backend
+   ```powershell
+   Copy-Item backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
+   ```
+
+   *(Note: `backend/src/main/resources/application.properties` is ignored by Git and must never be committed).*
+
+2. Set your PostgreSQL database password in Windows PowerShell for the current session:
+
+   ```powershell
+   $env:SPRING_DATASOURCE_PASSWORD = "your_postgres_password"
+   ```
+
+   *(Optional)* If using a non-default username, port, or database name:
+
+   ```powershell
+   $env:SPRING_DATASOURCE_USERNAME = "postgres"
+   $env:SPRING_DATASOURCE_URL = "jdbc:postgresql://localhost:5432/prepiq_db"
+   ```
+
+   *(Optional)* To set the environment variable permanently for your Windows user account:
+
+   ```powershell
+   [System.Environment]::SetEnvironmentVariable('SPRING_DATASOURCE_PASSWORD', 'your_postgres_password', 'User')
+   ```
+
+### 3. Run tests
+
+From the `backend` directory, run:
+
+```powershell
+.\mvnw.cmd test
+```
+
+### 4. Start the backend
 
 From the `backend` directory, run:
 
@@ -362,7 +395,7 @@ From the `backend` directory, run:
 
 The backend runs at `http://localhost:8080` when startup succeeds.
 
-### 4. Verify the Questions API
+### 5. Verify the Questions API
 
 Open another terminal and run:
 

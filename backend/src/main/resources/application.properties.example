@@ -1,0 +1,15 @@
+spring.application.name=backend
+
+# PostgreSQL Datasource Configuration
+# Set the following environment variables in your environment or session:
+#   SPRING_DATASOURCE_URL (optional, default: jdbc:postgresql://localhost:5432/prepiq_db)
+#   SPRING_DATASOURCE_USERNAME (optional, default: postgres)
+#   SPRING_DATASOURCE_PASSWORD (required)
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/prepiq_db}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:postgres}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+
+# JPA / Hibernate Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
